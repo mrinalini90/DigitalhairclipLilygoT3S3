@@ -18,7 +18,8 @@ is a genuinely hungry thing to run off it.
 This document is both the story of how it got built and the reference for
 building your own.
 
-## What it actually does
+<details>
+<summary><strong>What it actually does</strong></summary>
 
 Five slides, cycled with a button press, each with its own little looping
 corgi animation and its own colour:
@@ -46,9 +47,12 @@ extra circuitry, so deep sleep is the closest practical equivalent to
 "off." How much that actually saves is covered honestly, with real
 numbers, further down — the short version is: less than you'd hope.
 
+</details>
+
 ---
 
-## Building one
+<details>
+<summary><strong>Building one</strong></summary>
 
 ### What you need
 
@@ -176,6 +180,8 @@ There's no separate "uninstaller" -- removing this project just means putting di
 - **To wipe the board back to a blank slate**: Tools -> Erase Flash (set to "All Flash Contents"), then upload any sketch. This erases everything, including this program.
 - **To remove the code from your computer**: delete the cloned/extracted project folder. If you installed the LilyGo `TFT_eSPI` library bundle only for this project and don't need it elsewhere, you can also remove it from your Arduino `libraries` folder -- but note other T-Display S3 sketches will likely need it again.
 
+</details>
+
 ---
 
 <details>
@@ -246,7 +252,10 @@ not being looked at, expect closer to a full day's standby.
 
 ---
 
-## Notes
+<details>
+<summary><strong>Notes</strong></summary>
 
 - None of the corgi artwork here is original work — all of it (the wave/smile/battery-slide frames and the jump/thinking-it-over animations) came from pixel-art assets found online, sourced from unknown/unrecorded origins. This project is personal and non-commercial; if you recognise the art and want it credited or removed, that's a completely fair ask.
 - Battery percentage is a simple voltage-based estimate (not a lab-grade fuel gauge), calibrated for a typical single-cell LiPo (3.3V-4.2V range), and is noticeably noisy over short windows — treat single readings a few minutes apart with some skepticism; the numbers in the battery section above come from a longer, deliberately spaced-out test for that reason.
+
+</details>
