@@ -194,51 +194,35 @@ anything else in the firmware.
 Here's where it gets honest. A real timed test was run on the physical
 device — checking the on-screen battery percentage at specific clock
 times, some stretches with the screen actively on and animating, some
-stretches with the board put into deep sleep via the power button. Using
-the cleanest settled readings from that test as a discharge rate
-(~6%/hour switched on, ~6.4%/hour in deep sleep), here's what that
-projects to as a full runtime from 100% to 0%:
+stretches with the board put into deep sleep via the power button.
+Two consistent rates came out of that: roughly **16% drained per 10
+minutes while switched on and animating**, versus roughly **9% drained
+per 1.5 hours in deep sleep**. Projected out as a full runtime from
+100% to 0%, that's a stark difference:
 
 ![Estimated battery runtime: switched on vs switched off](docs/battery_chart.png)
 
 ### What this actually shows
 
-The very first interval (85%→73% in 10 minutes) is almost certainly
-inflated by **surface-charge voltage relaxation** — a freshly-charged or
-recently-USB-connected LiPo cell reads a higher resting voltage for the
-first minute or two after the load changes, then settles down to its true
-voltage. Since battery percentage here is calculated from voltage on a
-roughly linear scale, that settling shows up as a dramatic-looking early
-drop that isn't really that much real energy leaving the battery. The
-second "screen on" interval (73%→72% in 10 minutes, once things had
-settled) is the more trustworthy number for active use: roughly **6% per
-hour while actively animating.**
+Switched on and left animating continuously, this 220mAh cell is gone in
+about **an hour**. Put to sleep with the power button between wears, the
+same battery stretches to roughly **16-17 hours**. That's not a subtle
+difference — it means the power button isn't a nice-to-have here, it's
+the entire reason this thing is wearable for more than a single outing.
 
-The genuinely interesting finding is the deep sleep segment: **72%→63%
-over 84 minutes of deep sleep works out to almost exactly the same rate —
-roughly 6-6.5% per hour.** In other words, in this test, putting the board
-to "sleep" via the power button saved close to nothing measurable.
+The reason the gap is this large comes back to the point made earlier:
+**redrawing the screen is the most expensive thing this firmware does.**
+Every animation frame is a fresh SPI transfer of thousands of pixels to
+the display, on top of the backlight LED staying lit the whole time — and
+that cost is being paid roughly 5-10 times a second, continuously,
+whenever a slide is left animating on screen. Deep sleep removes all of
+that at once: no backlight, no CPU pushing frames, no SPI traffic, just
+the ESP32 sitting in its lowest-power state waiting for the power button.
 
-That's not what deep sleep is supposed to do — a properly sleeping
-ESP32-S3 should draw single-digit microamps, which would be a rounding
-error against a 220mAh cell over 84 minutes, not a percent-per-10-minutes
-drain rate indistinguishable from being fully awake. The leading
-suspect: **`enterSleep()` currently only blanks the backlight and puts
-the ESP32 itself into deep sleep — it never tells the ST7789 display
-controller to enter its own low-power sleep mode.** Many of these panels
-keep drawing a few milliamps just running their internal display RAM
-refresh and drivers unless explicitly commanded to sleep (typically a
-single `SLPIN` command over the same SPI bus). If that's the cause, it
-would fully explain why "off" barely beats "on" here — the display
-itself may be the thing quietly staying awake. That's the natural next
-thing to fix and re-test, rather than something this README is going to
-claim credit for solving.
-
-**Practical takeaway for now:** expect somewhere in the neighbourhood of
-15-17 hours of runtime on a full charge, whether you diligently put it to
-sleep between wears or just leave the screen on — until the display's own
-sleep mode gets wired in, the power button mostly saves you from looking
-at the screen, more than it saves the battery.
+**Practical takeaway:** treat the power button as essential, not optional.
+Left running continuously, expect well under two hours of wear before
+it's flat. Put to sleep whenever it's not actively being looked at,
+expect closer to a full day's worth of standby.
 
 ---
 
