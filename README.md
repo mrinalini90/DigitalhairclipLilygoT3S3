@@ -152,11 +152,8 @@ frame's pixels into the raw 16-bit colour format the display expects.
 That pipeline is what let five completely different mood animations
 (waving, jumping, thinking-it-over, etc.) get swapped in and compared
 quickly, instead of being stuck with whatever came bundled originally.
-
-<p align="center">
-  <img src="docs/photos/corgi_spritesheet_source.webp" width="45%" alt="The source corgi spritesheet the jump and thinking animations were sliced from" />
-</p>
-<p align="center"><em>The source spritesheet — not original art, not mine, found free online with the exact site unrecorded.</em></p>
+The original spritesheet itself is kept in `docs/photos/` for reference,
+not shown here.
 
 ### Why the animation is the main battery lever
 
