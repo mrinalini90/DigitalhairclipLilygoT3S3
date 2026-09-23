@@ -1,16 +1,19 @@
 /*
-  Dog Slides — T-Display S3 — SMOOTH ANIMATION + CRISP VECTOR FONTS
+  Dog Slides — T-Display S3 — POWER SAVING + BACKLIGHT DIMMING + CRISP VECTOR FONT
 */
 
 #include <TFT_eSPI.h>
 #include "driver/rtc_io.h"
 #include "esp_sleep.h"
+#include "esp_pm.h"
+#include "esp_wifi.h"
+#include "esp_bt.h"
 
 #include "sprite_wave_big.h"
-#include "sprite_redbull.h"
 #include "sprite_smile.h"
 #include "sprite_battery.h"
-#include "sprite_error404.h"
+#include "sprite_jump.h"
+#include "sprite_thinking.h"
 
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite dogBuf = TFT_eSprite(&tft);
@@ -19,13 +22,14 @@ TFT_eSprite dogBuf = TFT_eSprite(&tft);
 #define BTN_POWER 14  // USER button
 #define BATT_ADC_PIN 4 // onboard voltage-divider pin for reading battery voltage
 
-// BACKLIGHT CONFIGURATION (Using safe hardware PWM dimming only)
+// BACKLIGHT CONFIGURATION
 #define BACKLIGHT_PIN 15
 #define PWM_FREQ 5000
-#define PWM_RESOLUTION 8 
+#define PWM_RESOLUTION 8 // 8-bit means values range from 0 to 255
 
-// Set to 90 (35% brightness) to safely cut battery drain without glitching your code loops
-const int BRIGHTNESS_LEVEL = 90; 
+// Set brightness here: 0 (Off) to 255 (Full Brightness)
+// 90 is roughly 35% brightness -- dimmer than 115, better for battery life
+const int BRIGHTNESS_LEVEL = 90;
 
 int W, H;
 
@@ -38,14 +42,15 @@ struct Anim {
   int frameDelay;
 };
 
-Anim animWave    = { wave_big_frames, WAVE_BIG_FRAMES, WAVE_BIG_W, WAVE_BIG_H, 160 };
-Anim animRedbull = { redbull_frames,  REDBULL_FRAMES,  REDBULL_W,  REDBULL_H,  160 };
-Anim animSmile   = { smile_frames,    SMILE_FRAMES,    SMILE_W,    SMILE_H,    220 };
-Anim animBattery = { battery_frames,  BATTERY_FRAMES,  BATTERY_W,  BATTERY_H,  110 };
-Anim animError   = { error404_frames, ERROR404_FRAMES, ERROR404_W, ERROR404_H, 110 };
+// Frame delays slowed down further across the board for a calmer animation pace
+Anim animWave     = { wave_big_frames, WAVE_BIG_FRAMES, WAVE_BIG_W, WAVE_BIG_H, 270 };
+Anim animJump     = { jump_frames,     JUMP_FRAMES,     JUMP_W,     JUMP_H,     130 };
+Anim animSmile    = { smile_frames,    SMILE_FRAMES,    SMILE_W,    SMILE_H,    360 };
+Anim animBattery  = { battery_frames,  BATTERY_FRAMES,  BATTERY_W,  BATTERY_H,  90 };
+Anim animThinking = { thinking_frames, THINKING_FRAMES, THINKING_W, THINKING_H, 310 };
 
 struct Slide {
-  const char* lines[5]; 
+  const char* lines[5]; // Restored multi-line array brackets
   int lineCount;
   Anim* anim;
   int bufSize;   
@@ -53,12 +58,13 @@ struct Slide {
   uint8_t colR, colG, colB; 
 };
 
+// Text colours step through an orange -> dark brown gradient from the first slide to the last
 Slide slides[] = {
-  { {"HI!", "", "", "", ""},                                     1, &animWave,    160, true,  200,105, 35 },
-  { {"REDBULL", "UNTIL", "FRIYAY.", "", ""},                     3, &animRedbull, 130, false, 139, 69, 19 },
-  { {"SMILE!", "IT'S", "FRIYAY!", "", ""},                      3, &animSmile,   130, false, 184,134, 11 },
-  { {"1% BATTERY!", "100% MAIN", "CHARACTER", "ENERGY!", ""},    4, &animBattery, 130, false, 101, 67, 33 },
-  { {"ERROR 404:", "BAD VIBES", "NOT FOUND!", "MOVING ON!", ""}, 4, &animError,   130, false,  90, 50, 30 },
+  { {"HI!", "", "", "", ""},                                     1, &animWave,     160, true,  214,106, 30 },
+  { {"REDBULL", "UNTIL", "FRIYAY.", "", ""},                     3, &animJump,     130, false, 179, 90, 28 },
+  { {"SMILE!", "IT'S", "FRIYAY!", "", ""},                      3, &animSmile,    130, false, 143, 73, 25 },
+  { {"1% BATTERY!", "100% MAIN", "CHARACTER", "ENERGY!", ""},    4, &animBattery,  130, false, 108, 57, 23 },
+  { {"ERROR 404:", "BAD VIBES", "NOT FOUND!", "MOVING ON!", ""}, 4, &animThinking, 130, false,  72, 40, 20 },
 };
 
 const int slideCount = sizeof(slides) / sizeof(slides[0]);
@@ -78,10 +84,22 @@ int readBatteryPercent();
 void enterSleep();
 
 void setup() {
-  // Safe energy speed
   setCpuFrequencyMhz(80);
 
-  // Clean PWM dimming initialization
+  // Radios are never used here but can silently draw current if left enabled — kill them
+  esp_wifi_stop();
+  esp_bt_controller_disable();
+
+  // Let the CPU drop into light sleep during idle ticks (between frames, between button polls)
+  // instead of spinning at full clock. No effect on animation timing or button latency.
+  esp_pm_config_esp32s3_t pm_config = {
+    .max_freq_mhz = 80,
+    .min_freq_mhz = 10,
+    .light_sleep_enable = true
+  };
+  esp_pm_configure(&pm_config);
+
+  // Native ESP32 Core v3.0+ hardware PWM system dimming syntax
   ledcAttach(BACKLIGHT_PIN, PWM_FREQ, PWM_RESOLUTION);
   ledcWrite(BACKLIGHT_PIN, BRIGHTNESS_LEVEL); 
 
@@ -119,14 +137,12 @@ void loop() {
     lastBattUpdate = 0; 
   }
 
-  // Micro-pacing render handler
   bool frameChanged = drawAnimatedDog(now);
   if (frameChanged) {
     drawBatteryIcon(now);
   }
   
-  // Dropped to 5ms to allow ultra-smooth sub-frame step timing without loop latency
-  delay(5); 
+  delay(10); 
 }
 
 void handleButtons() {
@@ -162,8 +178,12 @@ void drawSlideStatic() {
   int textCenter = dogRight + textWidth / 2;
 
   uint16_t color = tft.color565(s.colR, s.colG, s.colB);
+  
+  // Adjusted spacing for standard font vs vector text structures
   int lineH = s.bigHi ? 78 : 34; 
   int blockH = s.lineCount * lineH;
+  
+  // Shifted starting Y position down globally by adding 20px to move text under the battery icon
   int startY = ((H - blockH) / 2) + 20;
 
   tft.setTextColor(color, bgColor());
@@ -172,17 +192,20 @@ void drawSlideStatic() {
     int y = startY + i * lineH;
     
     if (s.bigHi) {
+      // Slide 0: Crisp original Font 4 behavior
       tft.setTextDatum(TC_DATUM); 
       tft.setFreeFont(NULL); 
       tft.setTextSize(3);
-      tft.drawString(s.lines[i], textCenter, y - 20, 4); 
+      tft.drawString(s.lines[i], textCenter, y - 20, 4); // Standard center placement
       tft.drawString(s.lines[i], textCenter + 1, y - 20, 4);
       tft.drawString(s.lines[i], textCenter + 2, y - 20, 4);
       tft.setTextSize(1);
     } else {
+      // Slides 1-4: Clean compilation structure for the beautiful GFX vector bold text
       tft.setFreeFont(&FreeSansBold12pt7b); 
       tft.setTextSize(1); 
       
+      // Calculate layout text width using left alignment constraints
       tft.setTextDatum(TL_DATUM); 
       int strW = tft.textWidth(s.lines[i]);
       int calculatedX = textCenter - (strW / 2);
@@ -190,18 +213,18 @@ void drawSlideStatic() {
       tft.drawString(s.lines[i], calculatedX, y); 
     }
   }
+  
+  // Clean up: Reset back to system standard so it won't distort the battery icon font
   tft.setFreeFont(NULL);
 }
 
-// OPTIMIZED: Uses non-blocking differential delta matching to cleanly step frames smoothly
 bool drawAnimatedDog(unsigned long now) {
   Slide& s = slides[slideIndex];
   Anim* a = s.anim;
 
-  if (now - lastFrameTime >= a->frameDelay) {
+  if (now - lastFrameTime > a->frameDelay) {
     dogFrame = (dogFrame + 1) % a->frameCount;
-    // Advance tracking using exact mathematical intervals to prevent jitter
-    lastFrameTime += a->frameDelay; 
+    lastFrameTime = now;
 
     int buf = s.bufSize;
     int dogX = 4;
