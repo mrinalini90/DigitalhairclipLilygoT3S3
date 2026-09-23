@@ -67,46 +67,19 @@ numbers, further down — the short version is: less than you'd hope.
 - **An alligator clip** (the metal spring-loaded kind, like a large
   bulldog/crocodile clip) — this is what actually grips your hair
 
-### Installing the software
-
-1. **Install Arduino IDE** (2.x) from [arduino.cc](https://www.arduino.cc/en/software).
-2. **Add the ESP32 board package**: File -> Preferences -> paste this into "Additional boards manager URLs":
-   ```
-   https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
-   ```
-   Then Tools -> Board -> Boards Manager -> search "esp32" -> install the Espressif package.
-3. **Install the display library**: download [LilyGo's T-Display-S3 repo](https://github.com/Xinyuan-LilyGO/T-Display-S3), and copy everything inside its `lib/` folder into your Arduino `libraries/` folder (e.g. `Documents/Arduino/libraries`). This bundle includes a pre-configured `TFT_eSPI` with this board's correct pin mapping -- don't let the IDE auto-update it later, or it'll overwrite that config.
-4. **Clone this repo** (or download it as a ZIP and extract it), keeping the `dog_slides` folder intact -- Arduino needs the `.ino` file and its `.h` sprite files together in one folder.
-5. **Open `dog_slides/dog_slides.ino`** in Arduino IDE.
-6. **Set the board options** under Tools:
-   - Board: `LilyGo T3-S3` (or `ESP32S3 Dev Module` if that specific entry isn't available)
-   - USB CDC On Boot: `Enabled`
-   - Flash Size: `16MB`
-   - PSRAM: `OPI PSRAM`
-   - Partition Scheme: `16M Flash (3MB APP/9.9MB FATFS)`
-   - Upload Mode: `UART0/Hardware CDC`
-   - USB Mode: `CDC and JTAG`
-7. **Connect the board** via USB-C (a cable with data lines, not a charge-only one), select its port under Tools -> Port, and click **Upload**.
-
-If the upload hangs on "Connecting...." with no response, hold the
-**BOOT** button, tap **RESET** once while still holding BOOT, then start
-the upload and release BOOT once it starts writing — this manually forces
-the chip into its bootloader instead of relying on the auto-reset circuit.
-
-The board will boot straight into slide 1 once flashing finishes.
-
 ### Step by step
 
 1. **Flash the firmware first, while everything is still easy to reach.**
-   Connect the bare board to your PC over USB-C and go through the
-   [installing the software](#installing-the-software) steps above in
-   Arduino IDE. It's much easier to debug upload issues, iterate on
-   colours/animations, and test button behaviour *before* everything is
-   glued into a fixed physical assembly. (This is also where an AI coding
-   assistant genuinely earns its keep — most of the real engineering here
-   was compiling, flashing, diagnosing a corrupted-sprite bug, and tuning
-   frame timing over dozens of iterations, which is a lot less painful
-   with something driving the toolchain for you.)
+   Connect the bare board to your PC over USB-C and follow
+   [Installing the software](#installing-the-software) just below before
+   doing anything else. It's much easier to debug upload issues, iterate
+   on colours/animations, and test button behaviour *before* everything
+   is glued into a fixed physical assembly. (This is also where an AI
+   coding assistant genuinely earns its keep — most of the real
+   engineering here was compiling, flashing, diagnosing a
+   corrupted-sprite bug, and tuning frame timing over dozens of
+   iterations, which is a lot less painful with something driving the
+   toolchain for you.)
 
 2. **Open the case.** Use the small screwdriver set to carefully take the
    board out of its plastic housing. You just need the bare PCB — the
@@ -148,6 +121,38 @@ The board will boot straight into slide 1 once flashing finishes.
 
 That's it — clip it into a section of hair, press BOOT to cycle slides,
 and press the power button when you're done wearing it.
+
+### Installing the software
+
+This is what step 1 above is pointing at — do this part first, before
+any of the physical assembly:
+
+1. **Install Arduino IDE** (2.x) from [arduino.cc](https://www.arduino.cc/en/software).
+2. **Add the ESP32 board package**: File -> Preferences -> paste this into "Additional boards manager URLs":
+   ```
+   https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+   ```
+   Then Tools -> Board -> Boards Manager -> search "esp32" -> install the Espressif package.
+3. **Install the display library**: download [LilyGo's T-Display-S3 repo](https://github.com/Xinyuan-LilyGO/T-Display-S3), and copy everything inside its `lib/` folder into your Arduino `libraries/` folder (e.g. `Documents/Arduino/libraries`). This bundle includes a pre-configured `TFT_eSPI` with this board's correct pin mapping -- don't let the IDE auto-update it later, or it'll overwrite that config.
+4. **Clone this repo** (or download it as a ZIP and extract it), keeping the `dog_slides` folder intact -- Arduino needs the `.ino` file and its `.h` sprite files together in one folder.
+5. **Open `dog_slides/dog_slides.ino`** in Arduino IDE.
+6. **Set the board options** under Tools:
+   - Board: `LilyGo T3-S3` (or `ESP32S3 Dev Module` if that specific entry isn't available)
+   - USB CDC On Boot: `Enabled`
+   - Flash Size: `16MB`
+   - PSRAM: `OPI PSRAM`
+   - Partition Scheme: `16M Flash (3MB APP/9.9MB FATFS)`
+   - Upload Mode: `UART0/Hardware CDC`
+   - USB Mode: `CDC and JTAG`
+7. **Connect the board** via USB-C (a cable with data lines, not a charge-only one), select its port under Tools -> Port, and click **Upload**.
+
+If the upload hangs on "Connecting...." with no response, hold the
+**BOOT** button, tap **RESET** once while still holding BOOT, then start
+the upload and release BOOT once it starts writing — this manually forces
+the chip into its bootloader instead of relying on the auto-reset circuit.
+
+The board will boot straight into slide 1 once flashing finishes — now
+go back and do the physical assembly steps above.
 
 ### The finished build
 
