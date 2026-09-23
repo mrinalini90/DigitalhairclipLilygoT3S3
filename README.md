@@ -186,7 +186,7 @@ decision first and a style decision second.
 
 ---
 
-## Battery performance: on vs. deep sleep
+## Battery performance: screen on vs. screen on sleep
 
 Here's where it gets honest. A real timed test was run on the physical
 device — checking the on-screen battery percentage at specific clock
