@@ -1,43 +1,27 @@
-# The Digital Hair Clip
+# Digital Hair Clip
 
-A LilyGo T-Display S3 turned into a wearable, battery-powered hair clip that
-cycles through a little corgi's daily moods. It started as a "can I put a
-tiny animated screen on a hair clip" idea, and turned into a small project
-in embedded power budgeting: every design decision here — the sprite art,
-the frame rate, the brightness, the sleep behaviour — exists because a
-220mAh battery is a genuinely tiny amount of energy, and a full-colour LCD
-is a genuinely hungry thing to run off it.
+A LilyGo T-Display S3 wired up as a wearable, battery-powered hair clip that cycles through corgi animations.
 
-This document is both the story of how it got built and the reference for
-building your own.
+## What it does
 
-## What it actually does
+Five slides, cycled with a button press:
 
-Five slides, cycled with a button press, each with its own little looping
-corgi animation and its own colour:
+1. **HI!** — waving corgi
+2. **REDBULL UNTIL FRIYAY** — jumping corgi
+3. **SMILE! IT'S FRIYAY!** — happy blinking loop
+4. **1% BATTERY, 100% MAIN CHARACTER ENERGY** — running loop
+5. **ERROR 404: BAD VIBES NOT FOUND** — corgi thinking it over
 
-1. **HI!** — a big wave, warm orange text
-2. **REDBULL UNTIL FRIYAY** — the corgi jumping for joy
-3. **SMILE! IT'S FRIYAY!** — a happy blinking loop
-4. **1% BATTERY, 100% MAIN CHARACTER ENERGY** — a confident running loop
-5. **ERROR 404: BAD VIBES NOT FOUND** — the corgi thinking it over, unconvinced
-
-Every slide shows a live battery percentage in the top-right corner, read
-straight off the board's onboard GPIO4 voltage divider — green at 20% or
-above, red below.
+Battery percentage shown top-right on every slide (green ≥20%, red below).
 
 ### Controls
 
 | Button | Function |
 |---|---|
-| **BOOT** (GPIO0) | Advance to the next slide (wraps around after slide 5) |
-| **USER** (GPIO14) | Power button — press to sleep (screen goes black, board enters deep sleep), press again to wake up |
+| **BOOT** (GPIO0) | Next slide |
+| **USER** (GPIO14) | Sleep / wake |
 
-Waking from sleep always restarts from slide 1, since deep sleep doesn't
-preserve RAM. There's no true hardware power-off on this board without
-extra circuitry, so deep sleep is the closest practical equivalent to
-"off." How much that actually saves is covered honestly, with real
-numbers, further down — the short version is: less than you'd hope.
+Waking from sleep restarts at slide 1 (deep sleep doesn't preserve RAM).
 
 ---
 
@@ -45,243 +29,104 @@ numbers, further down — the short version is: less than you'd hope.
 
 ### What you need
 
-- **LilyGo T-Display S3** (1.9" ST7789 LCD, ESP32-S3), in its normal black
-  housing
-- **A 3.7V 220mAh LiPo battery**, the small 402030-size cell with a
-  2-pin JST connector and a built-in protection circuit (the kind sold for
-  small DIY electronics — it'll usually have a tiny status LED on the
-  board itself)
-- **A small screwdriver set** — you'll need it to open the board's case
-- **Electronics-safe double-sided sticky tape** (a foam mounting tape
-  works well; you want something that won't leave residue or short
-  anything out)
-- **A sheet of acrylic, 2-3mm thick** — this becomes the rigid backing
-  the whole thing is built on
-- **An alligator clip** (the metal spring-loaded kind, like a large
-  bulldog/crocodile clip) — this is what actually grips your hair
+- LilyGo T-Display S3 (1.9" ST7789, ESP32-S3), in its case
+- 3.7V 220mAh LiPo battery, 402030-size, 2-pin JST connector
+- Small screwdriver set
+- Electronics-safe double-sided sticky tape
+- Acrylic sheet, 2-3mm thick
+- Alligator clip (metal, spring-loaded)
 
-### Step by step
+### Steps
 
-1. **Flash the firmware first, while everything is still easy to reach.**
-   Connect the bare board to your PC over USB-C and go through the
-   [installation steps](#installation) below in Arduino IDE. It's much
-   easier to debug upload issues, iterate on colours/animations, and test
-   button behaviour *before* everything is glued into a fixed physical
-   assembly. (This is also where an AI coding assistant genuinely earns
-   its keep — most of the real engineering here was compiling, flashing,
-   diagnosing a corrupted-sprite bug, and tuning frame timing over dozens
-   of iterations, which is a lot less painful with something driving the
-   toolchain for you.)
+1. Flash the firmware first (see [Installation](#installation)) — easier to debug before assembly.
+2. Open the case and take out the bare board.
+3. Connect the battery. **Check polarity before plugging in** — reversed polarity can destroy the board and/or battery.
+4. Cut the acrylic sheet to roughly the board's size — this is the rigid backing.
+5. Tape the alligator clip to the back of the acrylic, jaws facing outward. This is what grips the hair; the acrylic just gives it a rigid mount.
+6. Tape the board and battery to the front of the acrylic.
+7. Check the alligator clip's jaws still open/close freely, and the USB-C port is still reachable.
 
-2. **Open the case.** Use the small screwdriver set to carefully take the
-   board out of its plastic housing. You just need the bare PCB — the
-   housing isn't used in the final assembly.
-
-3. **Connect the battery — carefully.** The JST connector on most of
-   these batteries is keyed so it only fits one way, but if yours isn't,
-   **check the polarity before plugging it in.** Getting it backwards
-   sends the battery's positive terminal straight into a ground pin (or
-   vice versa), and can genuinely destroy the board, the battery, or
-   both, sometimes with a bit of drama attached. Double-check red-to-red,
-   black-to-black before you seat the connector.
-
-4. **Cut the acrylic sheet to size.** Trace the bare board's outline (or
-   just eyeball it slightly larger) onto the acrylic and cut it down —
-   this becomes the rigid plate that everything else mounts to. Acrylic
-   is chosen here specifically because it's rigid, thin, and light: a
-   hair clip needs to not flex when clipped in, but also can't add much
-   weight.
-
-5. **This is the part that actually makes it a "clip": mount the
-   alligator clip to the acrylic.** Use the electronics-safe sticky tape
-   to fix the alligator clip's flat handle/base to the back of the
-   acrylic sheet, with its spring-loaded jaws facing outward past one
-   edge. The alligator clip is doing the actual mechanical job a hair
-   clip needs to do — clamping onto a section of hair and holding its
-   own weight — while the acrylic gives it a flat, rigid surface to be
-   mounted to instead of trying to stick electronics directly onto a
-   springy metal clip.
-
-6. **Stick the board to the front of the acrylic**, on the opposite face
-   from the clip, using the same sticky tape. Keep the battery tucked
-   against the acrylic too, ideally with its own small strip of tape so
-   it isn't just dangling on its wires.
-
-7. **Check clearances.** Make sure the alligator clip's jaws can still
-   open and close freely without catching on the board or battery wires,
-   and that the USB-C port is still reachable for future re-flashing
-   without having to pull anything apart.
-
-That's it — clip it into a section of hair, press BOOT to cycle slides,
-and press the power button when you're done wearing it.
+Clip it into your hair, BOOT to cycle slides, power button to sleep.
 
 ### The finished build
 
 <p align="center">
-  <img src="docs/photos/clip_side_profile.jpg" width="32%" alt="Side profile of the assembled clip, showing the acrylic backing, alligator clip jaws, and battery" />
-  <img src="docs/photos/screen_running.jpg" width="32%" alt="The clip held up with the HI slide running on screen" />
+  <img src="docs/photos/clip_side_profile.jpg" width="32%" alt="Side profile of the assembled clip" />
+  <img src="docs/photos/screen_running.jpg" width="32%" alt="The clip with the HI slide running" />
   <img src="docs/photos/clip_closed_edge.jpg" width="32%" alt="Edge-on view of the clip closed" />
 </p>
 
 <p align="center">
   <video src="docs/demo_clip.mp4" controls width="480">
-    Your browser doesn't support inline video — <a href="docs/demo_clip.mp4">download the clip</a> instead.
+    <a href="docs/demo_clip.mp4">Download the clip</a>
   </video>
 </p>
 
 ---
 
-## The software side, and why the animation choice matters so much
+## Software notes
 
-The firmware is a single Arduino sketch (`dog_slides/dog_slides.ino`)
-using `TFT_eSPI` for display output, with each slide's corgi animation
-stored as a small array of raw 16-bit colour frames compiled directly
-into the firmware (no SD card, no filesystem — everything lives in flash).
+Single Arduino sketch (`dog_slides/dog_slides.ino`) using `TFT_eSPI`. Each animation is a small array of raw 16-bit colour frames compiled into the firmware — no SD card, no filesystem.
 
-### Where the art came from
+### Art source
 
-The corgi spritesheet used for the "jump" and "thinking" animations was
-downloaded from a free asset website (a pre-made pixel-art corgi
-character sheet, distributed as a single packed image plus a small JSON
-manifest describing it) — the exact site isn't recorded, so treat the art
-as unattributed. Rather than hand-drawing dozens of animation
-frames, the sheet was sliced programmatically — detecting each sprite's
-bounding box against its transparent background, cropping it out, flattening
-it onto the same cream background colour the UI uses, and converting each
-frame's pixels into the raw 16-bit colour format the display expects.
-That pipeline is what let five completely different mood animations
-(waving, jumping, thinking-it-over, etc.) get swapped in and compared
-quickly, instead of being stuck with whatever came bundled originally.
+The corgi spritesheet used for the "jump" and "thinking" animations came from a free asset site found online — exact source unrecorded, not original work. Frames were sliced out of it programmatically (bounding-box detection, background flattening, conversion to the display's raw colour format).
 
 <p align="center">
-  <img src="docs/photos/corgi_spritesheet_source.webp" width="45%" alt="The source corgi spritesheet the jump and thinking animations were sliced from" />
+  <img src="docs/photos/corgi_spritesheet_source.webp" width="45%" alt="Source corgi spritesheet" />
 </p>
-<p align="center"><em>The source spritesheet — not original art, not mine, found free online with the exact site unrecorded.</em></p>
+<p align="center"><em>Source spritesheet — not mine, found free online.</em></p>
 
-### Why the animation is the main battery lever
+### Battery optimizations
 
-This is the part that isn't obvious until you've actually measured it:
-**redrawing the screen is the single most expensive thing this firmware
-does, by a wide margin.** Every animation frame means pushing thousands of
-pixels over SPI to the display controller, and SPI transfers cost real,
-measurable current — noticeably more than the CPU idling or even the
-backlight LED at moderate brightness. Which means the animation *frame
-rate* is a direct, physical battery-life dial:
-
-- A slide with a fast 6fps loop redraws the screen roughly twice as often
-  as one running at 3fps, for roughly twice the SPI/display power cost,
-  for a visual difference most people barely register.
-- Frame delays across every slide were deliberately tuned upward (slower)
-  from their original values, and two slides that still felt like they
-  needed motion (the jump and battery slides) were tuned back down
-  individually, rather than leaving everything fast by default.
-- The dog animation buffer itself is also kept as small as the art
-  allows (a 130x130 or 160x160 pixel sprite, not the full 320x170
-  screen), so each redraw only touches a fraction of the display.
-
-In short: the character of the animation (how bouncy, how fast, how
-often it updates) was chosen as a battery-life decision first and a
-"does it look nice" decision second — and it mattered more than almost
-anything else in the firmware.
-
-### Everything else that was tuned for battery life
-
-- **Backlight dimmed to ~35% brightness** (`BRIGHTNESS_LEVEL = 90` out of
-  255) via hardware PWM — the backlight LED is normally one of the two
-  biggest power draws on a display like this, right alongside the SPI
-  redraw cost above, so this alone made a big difference.
-- **CPU clocked down to 80MHz** (`setCpuFrequencyMhz(80)`) instead of the
-  chip's full 240MHz — this firmware isn't doing anything performance-
-  sensitive, so there's no reason to run the CPU any faster than it
-  needs to draw a few sprites and poll two buttons.
-- **Wi-Fi and Bluetooth radios explicitly powered down** at boot
-  (`esp_wifi_stop()`, `esp_bt_controller_disable()`) — neither is used
-  anywhere in this project, but the ESP32-S3 can leave them in a
-  partially-powered state by default, silently drawing current for
-  nothing.
-- **Automatic CPU light sleep enabled** (`esp_pm_configure(...)`) so the
-  chip drops into a low-power state during every idle gap between frames
-  and button polls, instead of spinning at full clock waiting for the
-  next `delay()` to expire. This has no effect on animation smoothness or
-  button responsiveness — light-sleep wake latency is sub-millisecond,
-  far faster than anything this firmware needs to react to.
+- **Animation frame rate kept low.** Redrawing the screen (SPI transfer) is the single biggest power cost in this firmware — bigger than the backlight or the CPU. Slower animations were chosen deliberately for battery life, not just style.
+- **Backlight dimmed to ~35%** (`BRIGHTNESS_LEVEL = 90/255`).
+- **CPU clocked down to 80MHz** instead of 240MHz.
+- **Wi-Fi/Bluetooth powered off** at boot — unused, but can silently draw current if left on.
+- **Automatic CPU light sleep** between frames/button polls — no effect on responsiveness.
 
 ---
 
 ## Battery performance: on vs. deep sleep
 
-Here's where it gets honest. A real timed test was run on the physical
-device — checking the on-screen battery percentage at specific clock
-times, some stretches with the screen actively on and animating, some
-stretches with the board put into deep sleep via the power button.
-Two consistent rates came out of that: roughly **16% drained per 10
-minutes while switched on and animating**, versus roughly **9% drained
-per 1.5 hours in deep sleep**. Projected out as a full runtime from
-100% to 0%, that's a stark difference:
+Measured on the physical device: roughly **16% drained per 10 minutes** switched on and animating, versus roughly **9% per 1.5 hours** in deep sleep. Projected to a full 100%→0% runtime:
 
 ![Estimated battery runtime: switched on vs switched off](docs/battery_chart.png)
 
-### What this actually shows
-
-Switched on and left animating continuously, this 220mAh cell is gone in
-about **an hour**. Put to sleep with the power button between wears, the
-same battery stretches to roughly **16-17 hours**. That's not a subtle
-difference — it means the power button isn't a nice-to-have here, it's
-the entire reason this thing is wearable for more than a single outing.
-
-The reason the gap is this large comes back to the point made earlier:
-**redrawing the screen is the most expensive thing this firmware does.**
-Every animation frame is a fresh SPI transfer of thousands of pixels to
-the display, on top of the backlight LED staying lit the whole time — and
-that cost is being paid roughly 5-10 times a second, continuously,
-whenever a slide is left animating on screen. Deep sleep removes all of
-that at once: no backlight, no CPU pushing frames, no SPI traffic, just
-the ESP32 sitting in its lowest-power state waiting for the power button.
-
-**Practical takeaway:** treat the power button as essential, not optional.
-Left running continuously, expect well under two hours of wear before
-it's flat. Put to sleep whenever it's not actively being looked at,
-expect closer to a full day's worth of standby.
+Left on continuously, the battery is gone in **about an hour**. Put to sleep between wears, it stretches to roughly **16-17 hours**. The power button isn't optional here — it's the difference between an hour of wear and a full day's standby.
 
 ---
 
 ## Installation
 
-1. **Install Arduino IDE** (2.x) from [arduino.cc](https://www.arduino.cc/en/software).
-2. **Add the ESP32 board package**: File -> Preferences -> paste this into "Additional boards manager URLs":
+1. Install Arduino IDE (2.x) from [arduino.cc](https://www.arduino.cc/en/software).
+2. Add the ESP32 board package: File → Preferences → "Additional boards manager URLs":
    ```
    https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
    ```
-   Then Tools -> Board -> Boards Manager -> search "esp32" -> install the Espressif package.
-3. **Install the display library**: download [LilyGo's T-Display-S3 repo](https://github.com/Xinyuan-LilyGO/T-Display-S3), and copy everything inside its `lib/` folder into your Arduino `libraries/` folder (e.g. `Documents/Arduino/libraries`). This bundle includes a pre-configured `TFT_eSPI` with this board's correct pin mapping -- don't let the IDE auto-update it later, or it'll overwrite that config.
-4. **Clone this repo** (or download it as a ZIP and extract it), keeping the `dog_slides` folder intact -- Arduino needs the `.ino` file and its `.h` sprite files together in one folder.
-5. **Open `dog_slides/dog_slides.ino`** in Arduino IDE.
-6. **Set the board options** under Tools:
-   - Board: `LilyGo T3-S3` (or `ESP32S3 Dev Module` if that specific entry isn't available)
+   Then Tools → Board → Boards Manager → search "esp32" → install.
+3. Install the display library: download [LilyGo's T-Display-S3 repo](https://github.com/Xinyuan-LilyGO/T-Display-S3), copy everything in its `lib/` folder into your Arduino `libraries/` folder. Don't let the IDE auto-update it later.
+4. Clone this repo (keep the `dog_slides` folder intact — `.ino` and `.h` files need to stay together).
+5. Open `dog_slides/dog_slides.ino` in Arduino IDE.
+6. Board settings under Tools:
+   - Board: `LilyGo T3-S3` (or `ESP32S3 Dev Module`)
    - USB CDC On Boot: `Enabled`
    - Flash Size: `16MB`
    - PSRAM: `OPI PSRAM`
    - Partition Scheme: `16M Flash (3MB APP/9.9MB FATFS)`
    - Upload Mode: `UART0/Hardware CDC`
    - USB Mode: `CDC and JTAG`
-7. **Connect the board** via USB-C (a cable with data lines, not a charge-only one), select its port under Tools -> Port, and click **Upload**.
+7. Connect via USB-C (data cable, not charge-only), select the port, click Upload.
 
-If the upload hangs on "Connecting...." with no response, hold the
-**BOOT** button, tap **RESET** once while still holding BOOT, then start
-the upload and release BOOT once it starts writing — this manually forces
-the chip into its bootloader instead of relying on the auto-reset circuit.
-
-The board will boot straight into slide 1 once flashing finishes.
+If upload hangs on "Connecting....": hold **BOOT**, tap **RESET** once (still holding BOOT), start the upload, release BOOT once it starts writing.
 
 ## Uninstallation
 
-There's no separate "uninstaller" -- removing this project just means putting different firmware on the board, or removing the code from your machine.
-
-- **To stop the board running this and use it for something else**: open any other sketch (even the bundled "Blink" example) in Arduino IDE with the board connected and click Upload. That fully overwrites this program.
-- **To wipe the board back to a blank slate**: Tools -> Erase Flash (set to "All Flash Contents"), then upload any sketch. This erases everything, including this program.
-- **To remove the code from your computer**: delete the cloned/extracted project folder. If you installed the LilyGo `TFT_eSPI` library bundle only for this project and don't need it elsewhere, you can also remove it from your Arduino `libraries` folder -- but note other T-Display S3 sketches will likely need it again.
+- **Use the board for something else**: upload any other sketch over this one.
+- **Wipe it back to blank**: Tools → Erase Flash → "All Flash Contents", then upload any sketch.
+- **Remove from your computer**: delete the project folder (and the `TFT_eSPI` library bundle, if not needed elsewhere).
 
 ## Notes
 
-- None of the corgi artwork here is original work — all of it (the wave/smile/battery-slide frames and the jump/thinking-it-over animations) came from pixel-art assets found online, sourced from unknown/unrecorded origins. This project is personal and non-commercial; if you recognise the art and want it credited or removed, that's a completely fair ask.
-- Battery percentage is a simple voltage-based estimate (not a lab-grade fuel gauge), calibrated for a typical single-cell LiPo (3.3V-4.2V range), and is noticeably noisy over short windows — treat single readings a few minutes apart with some skepticism; the numbers in the battery section above come from a longer, deliberately spaced-out test for that reason.
+- None of the corgi artwork is original — all of it came from pixel-art assets found online, source unrecorded. Personal, non-commercial project; happy to credit or remove on request.
+- Battery percentage is a voltage-based estimate, not a lab-grade fuel gauge, and is noisy over short windows.
