@@ -1,5 +1,10 @@
 # The Digital Hair Clip
 
+> ⚠️ **Safety:** the battery pins are exposed on the board's edge — cover
+> them with tape or a plastic shroud so hair can't bridge them. Reversed
+> battery polarity can destroy the board and/or battery, so always check
+> red-to-red, black-to-black before connecting.
+
 A LilyGo T-Display S3 turned into a wearable, battery-powered hair clip that
 cycles through a little corgi's daily moods. It started as a "can I put a
 tiny animated screen on a hair clip" idea, and turned into a small project
@@ -59,36 +64,6 @@ numbers, further down — the short version is: less than you'd hope.
   the whole thing is built on
 - **An alligator clip** (the metal spring-loaded kind, like a large
   bulldog/crocodile clip) — this is what actually grips your hair
-
-### ⚠️ Safety first — read this before touching the battery
-
-The T-Display S3 has its **battery pins exposed on the side edge of the
-board**, right where they're soldered to the JST connector. There's no
-cover over them by default. This matters for two separate reasons:
-
-- **The two exposed pins must never touch each other, or touch anything
-  conductive that bridges them** — a stray strand of hair, a bit of metal
-  dust, a loose wire, anything. Bridging positive and negative directly
-  shorts the battery through its thinnest, least protected path, which
-  can rapidly overheat the cell, damage the board, or in the worst case
-  cause the battery to vent or catch fire. Since this whole project is
-  designed to sit *in your hair*, this isn't a theoretical risk — **cover
-  the exposed pins with a small piece of insulating tape or a printed/cut
-  plastic shroud before wearing it**, so nothing can bridge them by
-  accident.
-- **Battery polarity must be correct every single time you connect it.**
-  Getting the JST connector backwards — positive into the pin expecting
-  negative, or vice versa — can genuinely destroy the board, the battery,
-  or both. This isn't a "it just won't turn on" failure mode; reversed
-  polarity can push current somewhere the circuit was never designed to
-  handle, with real potential for heat, damage, or a swelling/venting
-  battery. Most JST connectors are keyed so they physically can't be
-  plugged in backwards, but don't rely on that alone — **check red-to-red,
-  black-to-black before every connection**, especially if you ever
-  disconnect and reconnect the battery later.
-
-None of this means don't build it — it means build it with those two
-things specifically in mind, and don't skip the insulation step.
 
 ### Step by step
 
