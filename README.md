@@ -47,29 +47,14 @@ extra circuitry, so deep sleep is the closest practical equivalent to
 "off." How much that actually saves is covered honestly, with real
 numbers, further down — the short version is: less than you'd hope.
 
-### Recharging
-
-Plug a USB-C cable into the board — the T-Display S3 has an onboard
-charge circuit that charges the battery automatically whenever USB power
-is present, no extra steps needed. A few things worth knowing:
-
-- **Charge it on a hard, non-flammable surface**, not on bedding or
-  fabric, and don't leave it charging unattended for long stretches —
-  standard LiPo charging precautions, same as any small rechargeable
-  battery.
-- **You can leave it clipped together while charging**, but it's not
-  wearable at the same time — the USB cable has to stay connected.
-- The onboard **battery percentage reading only works correctly with USB
-  disconnected** (see the battery notes further down), so don't judge
-  charge state from the screen while it's plugged in — just give it a
-  couple of hours and unplug it.
-
 </details>
 
 ---
 
 <details>
 <summary><strong>Build Guide</strong></summary>
+
+<blockquote>
 
 <details>
 <summary><strong>What you need</strong></summary>
@@ -194,6 +179,28 @@ There's no separate "uninstaller" -- removing this project just means putting di
 - **To remove the code from your computer**: delete the cloned/extracted project folder. If you installed the LilyGo `TFT_eSPI` library bundle only for this project and don't need it elsewhere, you can also remove it from your Arduino `libraries` folder -- but note other T-Display S3 sketches will likely need it again.
 
 </details>
+
+<details>
+<summary><strong>Recharging</strong></summary>
+
+Plug a USB-C cable into the board — the T-Display S3 has an onboard
+charge circuit that charges the battery automatically whenever USB power
+is present, no extra steps needed. A few things worth knowing:
+
+- **Charge it on a hard, non-flammable surface**, not on bedding or
+  fabric, and don't leave it charging unattended for long stretches —
+  standard LiPo charging precautions, same as any small rechargeable
+  battery.
+- **You can leave it clipped together while charging**, but it's not
+  wearable at the same time — the USB cable has to stay connected.
+- The onboard **battery percentage reading only works correctly with USB
+  disconnected** (see the battery notes further down), so don't judge
+  charge state from the screen while it's plugged in — just give it a
+  couple of hours and unplug it.
+
+</details>
+
+</blockquote>
 
 </details>
 
