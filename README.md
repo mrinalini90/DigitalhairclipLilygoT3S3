@@ -173,89 +173,71 @@ There's no separate "uninstaller" -- removing this project just means putting di
 
 ---
 
-## The software side, and why the animation choice matters so much
+<details>
+<summary><strong>The software journey — optional read, for anyone curious how this actually came together</strong></summary>
 
-The firmware is one Arduino sketch (`dog_slides/dog_slides.ino`), each
-corgi animation baked in as raw colour frames — no SD card, nothing
-loaded at runtime, just flash memory doing the work.
+The goal at the start was simple: put a small animated character on a
+screen, clip it into hair, done. What actually happened was a crash
+course in how little energy 220mAh really is once a full-colour LCD is
+involved.
 
-The art itself (the "jump" and "thinking" animations) came from a free
-pixel-art spritesheet found online, sliced apart programmatically into
-individual frames and recoloured to match the UI's background — a
-shortcut that meant five different moods could be tried and swapped in
-minutes instead of hand-drawn one at a time. The original sheet lives in
-`docs/assets/` if you want to see where it came from.
+The firmware itself ended up as one Arduino sketch
+(`dog_slides/dog_slides.ino`), with each corgi animation baked directly
+into flash as raw colour frames — no SD card, nothing loaded at runtime.
+The art came from a free pixel-art spritesheet found online (the "jump"
+and "thinking" animations), sliced apart programmatically into
+individual frames and recoloured to match the UI — a shortcut that let
+five different moods get tried and swapped in minutes instead of
+hand-drawn one at a time. The original sheet lives in `docs/assets/` if
+you're curious.
 
-The animation choice turned out to matter more than expected, because it
-runs straight into a hard physical limit: pushing pixels to the screen is
-the single most expensive thing this firmware ever does — more than the
-CPU, more than the backlight. Every frame is a fresh wave of data over
-SPI, and a faster loop just means paying that cost more often for
-motion most people won't consciously notice. So every slide's frame rate
-got dialed down deliberately, the on-screen sprite was kept small instead
-of filling the display, and only the two slides that genuinely needed
-some bounce (jump, battery) were sped back up individually. The
-animation's personality — bouncy, slow, snappy — ended up being a battery
-decision first and a style decision second.
+That's where the simple part ended. Once the slides were running, the
+first real battery test came back rough — the display was noticeably
+hungrier than expected, and it turned out **redrawing the screen is the
+single most expensive thing this firmware ever does**, well above the
+CPU or even the backlight. Every animation frame is a fresh wave of pixel
+data over SPI, and a faster loop just pays that cost more often for
+motion most people don't consciously register. So every slide's frame
+rate got dialed back deliberately, the on-screen sprite was kept small
+instead of filling the display, and only the two slides that genuinely
+needed some bounce (jump, battery) got sped back up individually. The
+animation's personality ended up being a battery decision first, a style
+decision second.
 
-### Everything else that was tuned for battery life
+Alongside that, a handful of other things got tuned once it was clear
+battery life needed real attention:
 
-- **Backlight dimmed to ~35% brightness** (`BRIGHTNESS_LEVEL = 90` out of
-  255) via hardware PWM — the backlight LED is normally one of the two
-  biggest power draws on a display like this, right alongside the SPI
-  redraw cost above, so this alone made a big difference.
-- **CPU clocked down to 80MHz** (`setCpuFrequencyMhz(80)`) instead of the
-  chip's full 240MHz — this firmware isn't doing anything performance-
-  sensitive, so there's no reason to run the CPU any faster than it
-  needs to draw a few sprites and poll two buttons.
-- **Wi-Fi and Bluetooth radios explicitly powered down** at boot
-  (`esp_wifi_stop()`, `esp_bt_controller_disable()`) — neither is used
-  anywhere in this project, but the ESP32-S3 can leave them in a
-  partially-powered state by default, silently drawing current for
-  nothing.
-- **Automatic CPU light sleep enabled** (`esp_pm_configure(...)`) so the
-  chip drops into a low-power state during every idle gap between frames
-  and button polls, instead of spinning at full clock waiting for the
-  next `delay()` to expire. This has no effect on animation smoothness or
-  button responsiveness — light-sleep wake latency is sub-millisecond,
-  far faster than anything this firmware needs to react to.
+- **Backlight dimmed to ~35% brightness** (`BRIGHTNESS_LEVEL = 90/255`) —
+  right alongside screen redraws, one of the two biggest power draws here.
+- **CPU clocked down to 80MHz** instead of 240MHz — nothing this firmware
+  does needs the extra speed.
+- **Wi-Fi and Bluetooth powered off at boot** — unused, but can silently
+  draw current if left on.
+- **Automatic CPU light sleep** between frames and button polls — no
+  effect on responsiveness, since wake time is sub-millisecond.
 
----
-
-## Battery performance: screen on vs. screen on sleep
-
-Here's where it gets honest. A real timed test was run on the physical
-device — checking the on-screen battery percentage at specific clock
-times, some stretches with the screen actively on and animating, some
-stretches with the board put into deep sleep via the power button.
-Two consistent rates came out of that: roughly **16% drained per 10
-minutes while switched on and animating**, versus roughly **9% drained
-per 1.5 hours in deep sleep**. Projected out as a full runtime from
-100% to 0%, that's a stark difference:
+Then came the part that was genuinely surprising: a real timed test on
+the physical device, comparing the screen left on and animating against
+the board put to deep sleep via the power button. Two consistent rates
+came out of it — roughly **16% drained per 10 minutes switched on**,
+versus roughly **9% per 1.5 hours in deep sleep**. Projected out to a
+full 100%→0% runtime, that gap is stark:
 
 ![Estimated battery runtime: switched on vs switched off](docs/battery_performance_graph.png)
 
-### What this actually shows
+Left on continuously, this 220mAh cell is gone in **about an hour**. Put
+to sleep between wears, it stretches to roughly **16-17 hours**. That's
+not a subtle difference — the power button turned out to be the entire
+reason this is wearable for more than a single outing, not just a nice
+extra. It comes back to the same root cause as the frame-rate tuning:
+deep sleep switches off the backlight, the CPU, and all that SPI traffic
+at once, which is the only way to actually stop paying that cost.
 
-Switched on and left animating continuously, this 220mAh cell is gone in
-about **an hour**. Put to sleep with the power button between wears, the
-same battery stretches to roughly **16-17 hours**. That's not a subtle
-difference — it means the power button isn't a nice-to-have here, it's
-the entire reason this thing is wearable for more than a single outing.
+**Where it landed:** treat the power button as essential. Left running,
+expect well under two hours before it's flat. Put to sleep whenever it's
+not being looked at, expect closer to a full day's standby.
 
-The reason the gap is this large comes back to the point made earlier:
-**redrawing the screen is the most expensive thing this firmware does.**
-Every animation frame is a fresh SPI transfer of thousands of pixels to
-the display, on top of the backlight LED staying lit the whole time — and
-that cost is being paid roughly 5-10 times a second, continuously,
-whenever a slide is left animating on screen. Deep sleep removes all of
-that at once: no backlight, no CPU pushing frames, no SPI traffic, just
-the ESP32 sitting in its lowest-power state waiting for the power button.
-
-**Practical takeaway:** treat the power button as essential, not optional.
-Left running continuously, expect well under two hours of wear before
-it's flat. Put to sleep whenever it's not actively being looked at,
-expect closer to a full day's worth of standby.
+</details>
 
 ---
 
