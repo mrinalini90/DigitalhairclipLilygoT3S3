@@ -115,6 +115,20 @@ numbers, further down — the short version is: less than you'd hope.
 That's it — clip it into a section of hair, press BOOT to cycle slides,
 and press the power button when you're done wearing it.
 
+### The finished build
+
+<p align="center">
+  <img src="docs/photos/clip_side_profile.jpg" width="32%" alt="Side profile of the assembled clip, showing the acrylic backing, alligator clip jaws, and battery" />
+  <img src="docs/photos/screen_running.jpg" width="32%" alt="The clip held up with the HI slide running on screen" />
+  <img src="docs/photos/clip_closed_edge.jpg" width="32%" alt="Edge-on view of the clip closed" />
+</p>
+
+<p align="center">
+  <video src="docs/demo_clip.mp4" controls width="480">
+    Your browser doesn't support inline video — <a href="docs/demo_clip.mp4">download the clip</a> instead.
+  </video>
+</p>
+
 ---
 
 ## The software side, and why the animation choice matters so much
