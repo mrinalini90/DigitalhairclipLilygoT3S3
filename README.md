@@ -194,17 +194,12 @@ anything else in the firmware.
 Here's where it gets honest. A real timed test was run on the physical
 device — checking the on-screen battery percentage at specific clock
 times, some stretches with the screen actively on and animating, some
-stretches with the board put into deep sleep via the power button:
+stretches with the board put into deep sleep via the power button. Using
+the cleanest settled readings from that test as a discharge rate
+(~6%/hour switched on, ~6.4%/hour in deep sleep), here's what that
+projects to as a full runtime from 100% to 0%:
 
-| Time | Battery | State just before this reading |
-|---|---|---|
-| 11:20pm | 85% | (start of test, screen on) |
-| 11:30pm | 73% | Screen on for 10 minutes |
-| 11:33pm | 73% | Deep sleep for 3 minutes |
-| 11:43pm | 72% | Screen on for 10 minutes |
-| 1:07am | 63% | Deep sleep for ~84 minutes (via a quick check at 12:03am) |
-
-![Battery drain chart: screen on vs deep sleep](docs/battery_chart.png)
+![Estimated battery runtime: switched on vs switched off](docs/battery_chart.png)
 
 ### What this actually shows
 
