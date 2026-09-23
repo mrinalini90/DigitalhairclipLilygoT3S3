@@ -152,7 +152,7 @@ frame's pixels into the raw 16-bit colour format the display expects.
 That pipeline is what let five completely different mood animations
 (waving, jumping, thinking-it-over, etc.) get swapped in and compared
 quickly, instead of being stuck with whatever came bundled originally.
-The original spritesheet itself is kept in `docs/photos/` for reference,
+The original spritesheet itself is kept in `docs/assets/` for reference,
 not shown here.
 
 ### Why the animation is the main battery lever
