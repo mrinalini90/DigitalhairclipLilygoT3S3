@@ -187,10 +187,10 @@ Plug a USB-C cable into the board — the T-Display S3 has an onboard
 charge circuit that charges the battery automatically whenever USB power
 is present, no extra steps needed. A few things worth knowing:
 
-- **Charge it on a hard, non-flammable surface**, not on bedding or
-  fabric, and don't leave it charging unattended for long stretches —
-  standard LiPo charging precautions, same as any small rechargeable
-  battery.
+- **Only charge it under supervision.** Charge it on a hard,
+  non-flammable surface, not on bedding or fabric, and don't leave it
+  charging alone and unattended for long stretches — standard LiPo
+  charging precautions, same as any small rechargeable battery.
 - **You can leave it clipped together while charging**, but it's not
   wearable at the same time — the USB cable has to stay connected.
 - The onboard **battery percentage reading only works correctly with USB
