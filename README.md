@@ -139,53 +139,28 @@ and press the power button when you're done wearing it.
 
 ## The software side, and why the animation choice matters so much
 
-The firmware is a single Arduino sketch (`dog_slides/dog_slides.ino`)
-using `TFT_eSPI` for display output, with each slide's corgi animation
-stored as a small array of raw 16-bit colour frames compiled directly
-into the firmware (no SD card, no filesystem — everything lives in flash).
+The firmware is one Arduino sketch (`dog_slides/dog_slides.ino`), each
+corgi animation baked in as raw colour frames — no SD card, nothing
+loaded at runtime, just flash memory doing the work.
 
-### Where the art came from
+The art itself (the "jump" and "thinking" animations) came from a free
+pixel-art spritesheet found online, sliced apart programmatically into
+individual frames and recoloured to match the UI's background — a
+shortcut that meant five different moods could be tried and swapped in
+minutes instead of hand-drawn one at a time. The original sheet lives in
+`docs/assets/` if you want to see where it came from.
 
-The corgi spritesheet used for the "jump" and "thinking" animations was
-downloaded from a free asset website (a pre-made pixel-art corgi
-character sheet, distributed as a single packed image plus a small JSON
-manifest describing it) — the exact site isn't recorded, so treat the art
-as unattributed. Rather than hand-drawing dozens of animation
-frames, the sheet was sliced programmatically — detecting each sprite's
-bounding box against its transparent background, cropping it out, flattening
-it onto the same cream background colour the UI uses, and converting each
-frame's pixels into the raw 16-bit colour format the display expects.
-That pipeline is what let five completely different mood animations
-(waving, jumping, thinking-it-over, etc.) get swapped in and compared
-quickly, instead of being stuck with whatever came bundled originally.
-The original spritesheet itself is kept in `docs/assets/` for reference,
-not shown here.
-
-### Why the animation is the main battery lever
-
-This is the part that isn't obvious until you've actually measured it:
-**redrawing the screen is the single most expensive thing this firmware
-does, by a wide margin.** Every animation frame means pushing thousands of
-pixels over SPI to the display controller, and SPI transfers cost real,
-measurable current — noticeably more than the CPU idling or even the
-backlight LED at moderate brightness. Which means the animation *frame
-rate* is a direct, physical battery-life dial:
-
-- A slide with a fast 6fps loop redraws the screen roughly twice as often
-  as one running at 3fps, for roughly twice the SPI/display power cost,
-  for a visual difference most people barely register.
-- Frame delays across every slide were deliberately tuned upward (slower)
-  from their original values, and two slides that still felt like they
-  needed motion (the jump and battery slides) were tuned back down
-  individually, rather than leaving everything fast by default.
-- The dog animation buffer itself is also kept as small as the art
-  allows (a 130x130 or 160x160 pixel sprite, not the full 320x170
-  screen), so each redraw only touches a fraction of the display.
-
-In short: the character of the animation (how bouncy, how fast, how
-often it updates) was chosen as a battery-life decision first and a
-"does it look nice" decision second — and it mattered more than almost
-anything else in the firmware.
+The animation choice turned out to matter more than expected, because it
+runs straight into a hard physical limit: pushing pixels to the screen is
+the single most expensive thing this firmware ever does — more than the
+CPU, more than the backlight. Every frame is a fresh wave of data over
+SPI, and a faster loop just means paying that cost more often for
+motion most people won't consciously notice. So every slide's frame rate
+got dialed down deliberately, the on-screen sprite was kept small instead
+of filling the display, and only the two slides that genuinely needed
+some bounce (jump, battery) were sped back up individually. The
+animation's personality — bouncy, slow, snappy — ended up being a battery
+decision first and a style decision second.
 
 ### Everything else that was tuned for battery life
 
