@@ -76,11 +76,11 @@ struct Slide {
 };
 
 Slide slides[] = {
-  { {"HI", "", "", "", ""},                                     1, &animWave,    160, true,  200,105, 35 },
-  { {"REDBULL", "UNTIL", "FRIYAY", "", ""},                     3, &animRedbull, 130, false, 139, 69, 19 },
+  { {"HI!", "", "", "", ""},                                     1, &animWave,    160, true,  200,105, 35 },
+  { {"REDBULL", "UNTIL", "FRIYAY.", "", ""},                     3, &animRedbull, 130, false, 139, 69, 19 },
   { {"SMILE!", "IT'S", "FRIYAY!", "", ""},                      3, &animSmile,   130, false, 184,134, 11 },
-  { {"1% BATT", "100% MAIN", "ICONIC", "ENERGY", ""},           4, &animBattery, 130, false, 101, 67, 33 },
-  { {"ERROR 404", "BAD VIBES", "NOT FOUND", "MOVING ON", ""},   4, &animError,   130, false,  90, 50, 30 },
+  { {"1% BATTERY!", "100% MAIN", "CHARACTER", "ENERGY!", ""},           4, &animBattery, 130, false, 101, 67, 33 },
+  { {"ERROR 404:", "BAD VIBES", "NOT FOUND!", "MOVING ON!", ""},   4, &animError,   130, false,  90, 50, 30 },
 };
 const int slideCount = sizeof(slides) / sizeof(slides[0]);
 int slideIndex = 0;
