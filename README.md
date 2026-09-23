@@ -52,7 +52,7 @@ numbers, further down — the short version is: less than you'd hope.
 ---
 
 <details>
-<summary><strong>Building one</strong></summary>
+<summary><strong>Build Guide</strong></summary>
 
 ### What you need
 
