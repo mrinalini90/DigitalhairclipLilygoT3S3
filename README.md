@@ -1,9 +1,11 @@
 # The Digital Hair Clip
 
-> ⚠️ **Safety:** the battery pins are exposed on the board's edge — cover
-> them with tape or a plastic shroud so hair can't bridge them. Reversed
-> battery polarity can destroy the board and/or battery, so always check
-> red-to-red, black-to-black before connecting.
+> ⚠️ **A quick word before you build this:** the battery pins sit exposed
+> on the board's edge, and this thing is about to live in someone's hair —
+> so give those pins a small piece of tape before it's worn, or a stray
+> strand will happily bridge them for you. And get the polarity right
+> every time: backwards is the kind of mistake that takes the board and
+> the battery down together, not just one quiet blink of nothing happening.
 
 A LilyGo T-Display S3 turned into a wearable, battery-powered hair clip that
 cycles through a little corgi's daily moods. It started as a "can I put a
