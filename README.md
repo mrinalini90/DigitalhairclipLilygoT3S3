@@ -18,6 +18,20 @@ is a genuinely hungry thing to run off it.
 This document is both the story of how it got built and the reference for
 building your own.
 
+### The finished product
+
+<p align="center">
+  <img src="docs/photos/clip_side_profile.jpg" width="32%" alt="Side profile of the assembled clip, showing the acrylic backing, alligator clip jaws, and battery" />
+  <img src="docs/photos/screen_running.jpg" width="32%" alt="The clip held up with the HI slide running on screen" />
+  <img src="docs/photos/clip_closed_edge.jpg" width="32%" alt="Edge-on view of the clip closed" />
+</p>
+
+<p align="center">
+  <video src="docs/photos/device_demo.mp4" controls width="480">
+    Your browser doesn't support inline video — <a href="docs/photos/device_demo.mp4">download the clip</a> instead.
+  </video>
+</p>
+
 <details>
 <summary><strong>What it actually does</strong></summary>
 
@@ -157,20 +171,6 @@ the chip into its bootloader instead of relying on the auto-reset circuit.
 
 The board will boot straight into slide 1 once flashing finishes — now
 go back and do the physical assembly steps above.
-
-### The finished build
-
-<p align="center">
-  <img src="docs/photos/clip_side_profile.jpg" width="32%" alt="Side profile of the assembled clip, showing the acrylic backing, alligator clip jaws, and battery" />
-  <img src="docs/photos/screen_running.jpg" width="32%" alt="The clip held up with the HI slide running on screen" />
-  <img src="docs/photos/clip_closed_edge.jpg" width="32%" alt="Edge-on view of the clip closed" />
-</p>
-
-<p align="center">
-  <video src="docs/photos/device_demo.mp4" controls width="480">
-    Your browser doesn't support inline video — <a href="docs/photos/device_demo.mp4">download the clip</a> instead.
-  </video>
-</p>
 
 ### Uninstalling / resetting the board
 
