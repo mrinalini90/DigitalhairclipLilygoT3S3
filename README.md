@@ -124,8 +124,8 @@ and press the power button when you're done wearing it.
 </p>
 
 <p align="center">
-  <video src="docs/demo_clip.mp4" controls width="480">
-    Your browser doesn't support inline video — <a href="docs/demo_clip.mp4">download the clip</a> instead.
+  <video src="docs/photos/device_demo.mp4" controls width="480">
+    Your browser doesn't support inline video — <a href="docs/photos/device_demo.mp4">download the clip</a> instead.
   </video>
 </p>
 
@@ -216,7 +216,7 @@ minutes while switched on and animating**, versus roughly **9% drained
 per 1.5 hours in deep sleep**. Projected out as a full runtime from
 100% to 0%, that's a stark difference:
 
-![Estimated battery runtime: switched on vs switched off](docs/battery_chart.png)
+![Estimated battery runtime: switched on vs switched off](docs/battery_performance_graph.png)
 
 ### What this actually shows
 
