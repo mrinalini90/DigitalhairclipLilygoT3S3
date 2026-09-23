@@ -253,7 +253,7 @@ not being looked at, expect closer to a full day's standby.
 ---
 
 <details>
-<summary><strong>Notes</strong></summary>
+<summary><strong>Acknowledgements</strong></summary>
 
 - None of the corgi artwork here is original work — all of it (the wave/smile/battery-slide frames and the jump/thinking-it-over animations) came from pixel-art assets found online, sourced from unknown/unrecorded origins. This project is personal and non-commercial; if you recognise the art and want it credited or removed, that's a completely fair ask.
 - Battery percentage is a simple voltage-based estimate (not a lab-grade fuel gauge), calibrated for a typical single-cell LiPo (3.3V-4.2V range), and is noticeably noisy over short windows — treat single readings a few minutes apart with some skepticism; the numbers in the battery section above come from a longer, deliberately spaced-out test for that reason.
