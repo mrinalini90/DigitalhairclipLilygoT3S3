@@ -60,6 +60,36 @@ numbers, further down — the short version is: less than you'd hope.
 - **An alligator clip** (the metal spring-loaded kind, like a large
   bulldog/crocodile clip) — this is what actually grips your hair
 
+### ⚠️ Safety first — read this before touching the battery
+
+The T-Display S3 has its **battery pins exposed on the side edge of the
+board**, right where they're soldered to the JST connector. There's no
+cover over them by default. This matters for two separate reasons:
+
+- **The two exposed pins must never touch each other, or touch anything
+  conductive that bridges them** — a stray strand of hair, a bit of metal
+  dust, a loose wire, anything. Bridging positive and negative directly
+  shorts the battery through its thinnest, least protected path, which
+  can rapidly overheat the cell, damage the board, or in the worst case
+  cause the battery to vent or catch fire. Since this whole project is
+  designed to sit *in your hair*, this isn't a theoretical risk — **cover
+  the exposed pins with a small piece of insulating tape or a printed/cut
+  plastic shroud before wearing it**, so nothing can bridge them by
+  accident.
+- **Battery polarity must be correct every single time you connect it.**
+  Getting the JST connector backwards — positive into the pin expecting
+  negative, or vice versa — can genuinely destroy the board, the battery,
+  or both. This isn't a "it just won't turn on" failure mode; reversed
+  polarity can push current somewhere the circuit was never designed to
+  handle, with real potential for heat, damage, or a swelling/venting
+  battery. Most JST connectors are keyed so they physically can't be
+  plugged in backwards, but don't rely on that alone — **check red-to-red,
+  black-to-black before every connection**, especially if you ever
+  disconnect and reconnect the battery later.
+
+None of this means don't build it — it means build it with those two
+things specifically in mind, and don't skip the insulation step.
+
 ### Step by step
 
 1. **Flash the firmware first, while everything is still easy to reach.**
@@ -77,13 +107,12 @@ numbers, further down — the short version is: less than you'd hope.
    board out of its plastic housing. You just need the bare PCB — the
    housing isn't used in the final assembly.
 
-3. **Connect the battery — carefully.** The JST connector on most of
-   these batteries is keyed so it only fits one way, but if yours isn't,
-   **check the polarity before plugging it in.** Getting it backwards
-   sends the battery's positive terminal straight into a ground pin (or
-   vice versa), and can genuinely destroy the board, the battery, or
-   both, sometimes with a bit of drama attached. Double-check red-to-red,
-   black-to-black before you seat the connector.
+3. **Connect the battery — carefully.** Check polarity (red-to-red,
+   black-to-black) before you seat the connector — see the safety note
+   above for why this matters. Once it's connected, **cover the exposed
+   battery pins on the side of the board with a small piece of insulating
+   tape or a thin plastic shroud**, so nothing (hair included) can bridge
+   them once this is being worn.
 
 4. **Cut the acrylic sheet to size.** Trace the bare board's outline (or
    just eyeball it slightly larger) onto the acrylic and cut it down —
