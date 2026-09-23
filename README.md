@@ -127,9 +127,10 @@ into the firmware (no SD card, no filesystem — everything lives in flash).
 ### Where the art came from
 
 The corgi spritesheet used for the "jump" and "thinking" animations was
-sourced from a third-party asset pack (a pre-made pixel-art corgi
+downloaded from a free asset website (a pre-made pixel-art corgi
 character sheet, distributed as a single packed image plus a small JSON
-manifest describing it). Rather than hand-drawing dozens of animation
+manifest describing it) — the exact site isn't recorded, so treat the art
+as unattributed. Rather than hand-drawing dozens of animation
 frames, the sheet was sliced programmatically — detecting each sprite's
 bounding box against its transparent background, cropping it out, flattening
 it onto the same cream background colour the UI uses, and converting each
@@ -284,5 +285,5 @@ There's no separate "uninstaller" -- removing this project just means putting di
 
 ## Notes
 
-- The wave/smile/battery-slide corgi artwork is the project owner's own uploaded asset; the jump and thinking-it-over animations were sliced from a third-party pixel-art corgi spritesheet.
+- None of the corgi artwork here is original work — all of it (the wave/smile/battery-slide frames and the jump/thinking-it-over animations) came from pixel-art assets found online, sourced from unknown/unrecorded origins. This project is personal and non-commercial; if you recognise the art and want it credited or removed, that's a completely fair ask.
 - Battery percentage is a simple voltage-based estimate (not a lab-grade fuel gauge), calibrated for a typical single-cell LiPo (3.3V-4.2V range), and is noticeably noisy over short windows — treat single readings a few minutes apart with some skepticism; the numbers in the battery section above come from a longer, deliberately spaced-out test for that reason.
