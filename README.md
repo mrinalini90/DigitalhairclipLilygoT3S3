@@ -71,7 +71,8 @@ is present, no extra steps needed. A few things worth knowing:
 <details>
 <summary><strong>Build Guide</strong></summary>
 
-### What you need
+<details>
+<summary><strong>What you need</strong></summary>
 
 - **LilyGo T-Display S3** (1.9" ST7789 LCD, ESP32-S3), in its normal black
   housing
@@ -88,7 +89,10 @@ is present, no extra steps needed. A few things worth knowing:
 - **An alligator clip** (the metal spring-loaded kind, like a large
   bulldog/crocodile clip) — this is what actually grips your hair
 
-### Step by step
+</details>
+
+<details>
+<summary><strong>Step by step</strong></summary>
 
 1. **Flash the firmware first, while everything is still easy to reach.**
    Connect the bare board to your PC over USB-C and follow
@@ -143,7 +147,10 @@ is present, no extra steps needed. A few things worth knowing:
 That's it — clip it into a section of hair, press BOOT to cycle slides,
 and press the power button when you're done wearing it.
 
-### Installing the software
+</details>
+
+<details>
+<summary><strong>Installing the software</strong></summary>
 
 This is what step 1 above is pointing at — do this part first, before
 any of the physical assembly:
@@ -175,13 +182,18 @@ the chip into its bootloader instead of relying on the auto-reset circuit.
 The board will boot straight into slide 1 once flashing finishes — now
 go back and do the physical assembly steps above.
 
-### Uninstalling / resetting the board
+</details>
+
+<details>
+<summary><strong>Uninstalling / resetting the board</strong></summary>
 
 There's no separate "uninstaller" -- removing this project just means putting different firmware on the board, or removing the code from your machine.
 
 - **To stop the board running this and use it for something else**: open any other sketch (even the bundled "Blink" example) in Arduino IDE with the board connected and click Upload. That fully overwrites this program.
 - **To wipe the board back to a blank slate**: Tools -> Erase Flash (set to "All Flash Contents"), then upload any sketch. This erases everything, including this program.
 - **To remove the code from your computer**: delete the cloned/extracted project folder. If you installed the LilyGo `TFT_eSPI` library bundle only for this project and don't need it elsewhere, you can also remove it from your Arduino `libraries` folder -- but note other T-Display S3 sketches will likely need it again.
+
+</details>
 
 </details>
 
